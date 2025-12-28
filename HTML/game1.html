@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LevelUp - Space Dodge</title>
+    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="stylesheet" href="../CSS/game1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Level<span>Up</span>!</div>
+        <div class="nav-user-info">
+            <span id="navUserName">שלום, שחקן</span>
+            <a href="main.html" class="btn btn-outline" style="text-decoration: none; font-size: 0.9rem;">חזרה ללובי</a>
+        </div>
+    </nav>
+
+    <div class="container game-container">
+        
+        <header class="game-header">
+            <h1>Space Dodge 🚀</h1>
+            <div class="game-stats">
+                <div class="stat-box"><span>ניקוד:</span> <span id="scoreDisplay">0</span></div>
+                <div class="stat-box"><span>חיים:</span> <span id="livesDisplay">❤️❤️❤️</span></div>
+                <div class="stat-box"><span>רמה:</span> <span id="levelDisplay">1</span></div>
+            </div>
+        </header>
+
+        <div id="gameArea" class="game-area">
+            <div id="startScreen" class="overlay">
+                <h2>מוכנים להמראה?</h2>
+                <p>השתמשו בחצים ⬅️ ➡️ כדי לזוז</p>
+                <button id="startBtn" class="btn btn-success pulse-btn">התחל משחק</button>
+            </div>
+
+            <div id="gameOverScreen" class="overlay hidden">
+                <h2>המשחק נגמר! 💥</h2>
+                <p>הניקוד שלך: <span id="finalScore">0</span></p>
+                <button id="restartBtn" class="btn btn-primary">שחק שוב</button>
+                <!-- הוספת ID לכפתור היציאה -->
+                <button id="exitBtn" class="btn btn-outline" style="margin-top: 10px; color:white; border-color:white;">יציאה</button>
+            </div>
+        </div>
+
+        <div class="mobile-controls">
+            <button id="btnLeft" class="control-btn">⬅️</button>
+            <button id="btnRight" class="control-btn">➡️</button>
+        </div>
+
+    </div>
+
+    <script src="../JS/game1.js"></script>
+    <!-- הוספת סקריפט קטן לטיפול בכפתור היציאה -->
+    <script>
+        document.getElementById('exitBtn').addEventListener('click', () => {
+            window.location.href = 'main.html';
+        });
+    </script>
+</body>
+</html>

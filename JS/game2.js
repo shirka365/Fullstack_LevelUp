@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ... (כל הקוד הקיים עד לפונקציה endGame) ...
+
     function endGame() {
         console.log("Game Over!");
         stopTimer();
@@ -170,18 +172,51 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (winModal) winModal.classList.remove('hidden');
 
-        // שמירת שיא (רק אם יש משתמש, אחרת מדלגים)
+        // --- שמירת נתונים למערכת המרכזית ---
         if (currentUser) {
-            const currentBest = currentUser.memoryBestScore || Infinity;
-            if (moves < currentBest) {
-                currentUser.memoryBestScore = moves;
-                try {
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    console.log("New high score saved!");
-                } catch (e) {
-                    console.warn("Could not save score:", e);
-                }
+            // במשחק הזיכרון, פחות צעדים = ציון יותר גבוה
+            // נחשב ציון מדומה: 100 פחות הצעדים (מינימום 10)
+            let calculatedScore = Math.max(10, 100 - moves);
+            
+            // בונוס מטבעות קבוע על ניצחון
+            let coinsEarned = 20;
+
+            saveGameStats({
+                gameId: 'game2',
+                currentScore: calculatedScore, // שומרים ציון ולא צעדים, כדי שיהיה קל להשוות
+                coinsEarned: coinsEarned
+            });
+        }
+    }
+
+    // --- אותה פונקציית שמירה כמו במשחק הראשון (כדי לא לשכפל לוגיקה) ---
+    function saveGameStats(data) {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+
+        if (userIndex !== -1) {
+            const user = users[userIndex];
+
+            // עדכון סטטיסטיקות כלליות
+            user.gamesPlayed = (user.gamesPlayed || 0) + 1;
+            user.coins = (user.coins || 0) + data.coinsEarned;
+
+            // עדכון שיא (במשחק הזה ציון גבוה זה טוב)
+            if (data.currentScore > (user.scores[data.gameId] || 0)) {
+                user.scores[data.gameId] = data.currentScore;
             }
+
+            // שמירה קבועה
+            users[userIndex] = user;
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // עדכון זמני (Session)
+            currentUser.gamesPlayed = user.gamesPlayed;
+            currentUser.coins = user.coins;
+            currentUser.scores = user.scores;
+            currentUser.highScore = Math.max(user.scores.game1 || 0, user.scores.game2 || 0);
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
     }
 
