@@ -47,10 +47,34 @@
     border-radius: 15px;
 }
 
-/* מצב שבו הקלף הפוך (רואים את התוכן) */
 .card.flipped {
     transform: rotateY(180deg);
 }
+
+.card.matched {
+    transform: rotateY(180deg);
+    pointer-events: none;
+    animation: fadeOut 0.8s ease forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: rotateY(180deg) scale(1);
+    }
+    60% {
+        opacity: 1;
+        transform: rotateY(180deg) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: rotateY(180deg) scale(0.8);
+    }
+}
+
+
+
+
 
 /* הצד הקדמי והאחורי של הקלף */
 .card-face {
@@ -88,11 +112,7 @@
     border-color: var(--secondary-color);
 }
 
-/* קלף שנפתר (זוג תואם) */
-.card.matched {
-    animation: matchAndFade 0.8s ease-in-out forwards;
-    pointer-events: none;
-}
+
 
 .card.matched .card-back {
     background-color: var(--success-color);
@@ -100,31 +120,6 @@
     color: white;
 }
 
-@keyframes pulse {
-    0% { transform: rotateY(180deg) scale(1); }
-    50% { transform: rotateY(180deg) scale(1.1); }
-    100% { transform: rotateY(180deg) scale(1); }
-}
-
-@keyframes matchAndFade {
-    0% { 
-        transform: rotateY(180deg) scale(1);
-        opacity: 1;
-    }
-    30% { 
-        transform: rotateY(180deg) scale(1.15);
-        opacity: 1;
-    }
-    60% {
-        transform: rotateY(180deg) scale(1.1);
-        opacity: 1;
-    }
-    100% { 
-        transform: rotateY(180deg) scale(0.8);
-        opacity: 0;
-        visibility: hidden;
-    }
-}
 
 /* --- מודל ניצחון --- */
 .modal {

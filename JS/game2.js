@@ -1,45 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    console.log("Game Script Loaded! Starting initialization...");
-
-    // --- 1. משתני המשחק ורכיבי ה-DOM ---
+    // אלמנטים
     const gameBoard = document.getElementById('gameBoard');
     const movesDisplay = document.getElementById('movesCount');
     const timeDisplay = document.getElementById('timeCount');
     const restartBtn = document.getElementById('restartBtn');
     const winModal = document.getElementById('winModal');
-    const navUserNameElement = document.getElementById('navUserName');
 
-    // בדיקת תקינות קריטית - אם אין לוח, אי אפשר לשחק
-    if (!gameBoard) {
-        console.error("Critical Error: element with id 'gameBoard' not found in HTML!");
-        alert("שגיאה: לא נמצא לוח משחק (gameBoard). בדקי את קובץ ה-HTML.");
-        return;
-    }
-
-    // --- 2. ניהול משתמש (מצב אורח/פיתוח) ---
-    let currentUser = null;
-    try {
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-            currentUser = JSON.parse(storedUser);
-            console.log("User loaded:", currentUser.username);
-        } else {
-            console.log("No user found - Running in Guest/Dev Mode");
-        }
-    } catch (error) {
-        console.warn("LocalStorage access failed (Guest Mode active):", error);
-    }
-
-    // עדכון תצוגה אם האלמנט קיים (לא חובה לפעולה התקינה של המשחק)
-    if (navUserNameElement) {
-        navUserNameElement.textContent = currentUser ? currentUser.username : "אורח (מצב פיתוח)";
-    }
-
-    // --- 3. לוגיקת המשחק ---
+    // משתני משחק
     const cardItems = ['🍕', '🚀', '🐱', '🌵', '🎈', '🎸', '🍦', '💎']; 
-    let cards = []; // יאוכלס מחדש בכל משחק
-    
+    let cards = []; 
     let flippedCards = []; 
     let matchedPairs = 0;  
     let moves = 0;         
@@ -47,24 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;     
     let seconds = 0;
 
-    // --- אתחול והרצת המשחק ---
     initGame();
 
+    // חיבור כפתור אתחול
     if (restartBtn) {
         restartBtn.addEventListener('click', initGame);
     }
 
     function initGame() {
-        console.log("Initializing new game...");
-        
-        // איפוס משתנים
         moves = 0;
         matchedPairs = 0;
         seconds = 0;
         flippedCards = [];
         gameActive = true;
         
-        // יצירה מחדש של חפיסת הקלפים (כדי להבטיח ניקיון)
         cards = [...cardItems, ...cardItems]; 
         
         if (winModal) winModal.classList.add('hidden');
@@ -73,42 +39,39 @@ document.addEventListener('DOMContentLoaded', () => {
         stopTimer();
         startTimer();
 
-        // ניקוי הלוח מהמשחק הקודם
-        gameBoard.innerHTML = '';
-
-        // ערבוב הקלפים
-        shuffleArray(cards);
-
-        // יצירת הקלפים ב-DOM
-        cards.forEach((item) => {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.value = item;
-
-            // צד קדמי (האימוג'י - מוסתר בהתחלה ע"י רוטציה)
-            const cardBack = document.createElement('div');
-            cardBack.classList.add('card-face', 'card-back');
-            cardBack.textContent = item;
-
-            // צד אחורי (סימן שאלה/עיצוב - גלוי בהתחלה)
-            const cardFront = document.createElement('div');
-            cardFront.classList.add('card-face', 'card-front');
-            cardFront.textContent = '?';
-
-            card.appendChild(cardBack);
-            card.appendChild(cardFront);
+        // ניקוי ובניית הלוח
+        if (gameBoard) {
+            gameBoard.innerHTML = '';
+            shuffleArray(cards);
             
-            card.addEventListener('click', handleCardClick);
-            gameBoard.appendChild(card);
-        });
-        
-        console.log("Cards generated:", cards.length);
+            cards.forEach((item) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = item;
+
+                // צד קדמי (סימן שאלה) - ב HTML זה ה-card-front
+                const cardFront = document.createElement('div');
+                cardFront.classList.add('card-face', 'card-front');
+                cardFront.textContent = '?';
+
+                // צד אחורי (אימוג'י) - ב HTML זה ה-card-back
+                const cardBack = document.createElement('div');
+                cardBack.classList.add('card-face', 'card-back');
+                cardBack.textContent = item;
+
+                // סדר ההוספה חשוב ל-CSS 3D
+                card.appendChild(cardFront); 
+                card.appendChild(cardBack);
+                
+                card.addEventListener('click', handleCardClick);
+                gameBoard.appendChild(card);
+            });
+        }
     }
 
     function handleCardClick(e) {
         const clickedCard = e.currentTarget;
 
-        // בדיקות תקינות ללחיצה
         if (!gameActive || 
             clickedCard.classList.contains('flipped') || 
             clickedCard.classList.contains('matched') ||
@@ -128,64 +91,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkForMatch() {
         const [card1, card2] = flippedCards;
-        const value1 = card1.dataset.value;
-        const value2 = card2.dataset.value;
 
-        gameActive = false; // נעילת הלוח
+        gameActive = false;
 
-        if (value1 === value2) {
-            // התאמה!
-            console.log("Match found: " + value1);
-            card1.classList.add('matched');
-            card2.classList.add('matched');
-            matchedPairs++;
-            
-            flippedCards = [];
-            gameActive = true;
+        if (card1.dataset.value === card2.dataset.value) {
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
 
-            if (matchedPairs === cardItems.length) {
-                endGame();
-            }
+                card1.classList.add('matched');
+                card2.classList.add('matched');
 
+                matchedPairs++;
+                flippedCards = [];
+                gameActive = true;
+
+                if (matchedPairs === cardItems.length) {
+                    endGame();
+                }
+            }, 300);
         } else {
-            // אין התאמה
             setTimeout(() => {
                 card1.classList.remove('flipped');
                 card2.classList.remove('flipped');
                 flippedCards = [];
                 gameActive = true;
-            }, 1000);
+            }, 800);
         }
     }
+
 
     function endGame() {
-        console.log("Game Over!");
         stopTimer();
-        
-        const finalMovesEl = document.getElementById('finalMoves');
-        const finalTimeEl = document.getElementById('finalTime');
-        
-        if (finalMovesEl) finalMovesEl.textContent = moves;
-        if (finalTimeEl) finalTimeEl.textContent = formatTime(seconds);
-        
-        if (winModal) winModal.classList.remove('hidden');
-
-        // שמירת שיא (רק אם יש משתמש, אחרת מדלגים)
-        if (currentUser) {
-            const currentBest = currentUser.memoryBestScore || Infinity;
-            if (moves < currentBest) {
-                currentUser.memoryBestScore = moves;
-                try {
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    console.log("New high score saved!");
-                } catch (e) {
-                    console.warn("Could not save score:", e);
-                }
-            }
+        if (winModal) {
+            const finalMovesEl = document.getElementById('finalMoves');
+            const finalTimeEl = document.getElementById('finalTime');
+            if (finalMovesEl) finalMovesEl.textContent = moves;
+            if (finalTimeEl) finalTimeEl.textContent = formatTime(seconds);
+            winModal.classList.remove('hidden');
+        } else {
+            alert(`כל הכבוד! סיימת ב-${moves} צעדים ובזמן ${formatTime(seconds)}`);
         }
     }
 
-    // --- עזרים ---
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
