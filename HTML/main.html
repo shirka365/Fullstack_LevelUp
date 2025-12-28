@@ -4,31 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LevelUp - עמוד הבית והמשחקים</title>
-    
-    <!-- קישור לקובץ ה-CSS בתיקיית CSS (יוצאים מתיקיית HTML ונכנסים ל-CSS) -->
     <link rel="stylesheet" href="../CSS/main.css">
-
-    <!-- ייבוא פונטים -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- ניווט -->
     <nav class="navbar">
         <div class="logo">Level<span>Up</span>!</div>
         <div class="nav-user-info">
             <span id="navUserName">שלום, אורח</span>
-            <button class="btn-logout" onclick="logout()">יציאה</button>
+            <!-- שינוי: הוספת ID והחלפת מחלקה -->
+            <button id="logoutBtn" class="btn btn-outline">יציאה</button>
         </div>
     </nav>
 
     <div class="container">
-
-        <!-- אזור אישי: סטטיסטיקות ופרופיל -->
         <section class="dashboard-header">
-            <!-- כרטיס קבלת פנים -->
             <div class="welcome-card">
                 <div class="avatar-circle">👾</div>
                 <div>
@@ -37,76 +30,86 @@
                 </div>
             </div>
 
-            <!-- סטטיסטיקות (נשלפות מ-Local Storage) -->
             <div class="stat-card">
                 <h3>השיא שלי</h3>
                 <div class="value" id="highScoreDisplay">0</div>
             </div>
-            
             <div class="stat-card">
                 <h3>מטבעות</h3>
                 <div class="value" id="coinsDisplay">0</div>
             </div>
-            
             <div class="stat-card">
                 <h3>משחקים שוחקו</h3>
                 <div class="value" id="gamesPlayedDisplay">0</div>
             </div>
         </section>
 
-        <!-- אזור המשחקים (Apps Page) -->
         <section>
             <h2>🎮 בחרו משחק</h2>
             <div class="games-grid">
                 
-                <!-- משחק 1: פעיל -->
                 <article class="game-card">
                     <div class="game-img" style="background-color: #FFE0B2;">🚀</div>
                     <div class="game-content">
                         <div class="game-title">Space Dodge</div>
                         <div class="game-desc">התחמקו מהמטאורים ואספו כוכבים בחלל! משחק מהירות ותגובה.</div>
-                        <a href="game1.html" class="btn-play">שחקו עכשיו</a>
+                        <!-- שינוי: שימוש במחלקה אחידה -->
+                        <a href="game1.html" class="btn btn-success">שחקו עכשיו</a>
                     </div>
                 </article>
 
-                <!-- משחק 2: פעיל -->
                 <article class="game-card">
                     <div class="game-img" style="background-color: #C5CAE9;">🧠</div>
                     <div class="game-content">
                         <div class="game-title">Memory Master</div>
                         <div class="game-desc">משחק הזיכרון הקלאסי עם טוויסט צבעוני. כמה מהר תמצאו את הזוגות?</div>
-                        <a href="game2.html" class="btn-play">שחקו עכשיו</a>
+                        <a href="game2.html" class="btn btn-success">שחקו עכשיו</a>
                     </div>
                 </article>
 
-                <!-- משחק 3: לא פעיל -->
                 <article class="game-card disabled">
                     <div class="badge-soon">בקרוב!</div>
                     <div class="game-img">🐍</div>
                     <div class="game-content">
                         <div class="game-title">Super Snake</div>
                         <div class="game-desc">הנחש הרעב חוזר בגדול. כרגע נמצא בפיתוח במעבדות שלנו.</div>
-                        <button class="btn-play" disabled>עדיין בפיתוח</button>
+                        <button class="btn" disabled>עדיין בפיתוח</button>
                     </div>
                 </article>
 
-                <!-- משחק 4: לא פעיל -->
                 <article class="game-card disabled">
                     <div class="badge-soon">בקרוב!</div>
                     <div class="game-img">❌⭕</div>
                     <div class="game-content">
                         <div class="game-title">Tic Tac Toe</div>
                         <div class="game-desc">איקס עיגול נגד המחשב או נגד חבר. עובדים על הבינה המלאכותית.</div>
-                        <button class="btn-play" disabled>עדיין בפיתוח</button>
+                        <button class="btn" disabled>עדיין בפיתוח</button>
                     </div>
                 </article>
 
             </div>
         </section>
 
+        <section class="leaderboard-section">
+            <h2>🏆 טבלת האלופים</h2>
+            <div class="table-responsive">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>דירוג</th>
+                            <th>שחקן</th>
+                            <th>השיא הגבוה</th>
+                            <th>משחקים</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <tr><td colspan="4" style="text-align:center;">טוען נתונים...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <!-- קישור לקובץ ה-JavaScript בתיקיית JS (יוצאים מ-HTML ונכנסים ל-JS) -->
     <script src="../JS/main.js"></script>
 </body>
 </html>

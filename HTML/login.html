@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LevelUp - כניסה ורישום</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="stylesheet" href="../CSS/login.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Level<span>Up</span>!</div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="login-container">
+            <!-- צד ימין -->
+            <div class="visual-side">
+                <div class="floating-shapes">
+                    <span style="top: 10%; left: 10%;">🎮</span>
+                    <span style="top: 60%; left: 80%;">🚀</span>
+                    <span style="bottom: 10%; left: 20%;">⭐</span>
+                </div>
+                <div class="visual-content">
+                    <h1>מוכנים לשחק?</h1>
+                    <p>הצטרפו לזירת המשחקים של LevelUp!</p>
+                </div>
+            </div>
+
+            <!-- צד שמאל -->
+            <div class="form-side">
+                <!-- כניסה -->
+                <div id="loginSection" class="form-box">
+                    <div class="header-icon">👋</div>
+                    <h2>ברוכים השבים!</h2>
+                    <div id="loginMsg" class="message-box"></div>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label class="form-label">שם משתמש</label>
+                            <input type="text" id="loginUser" class="form-input" placeholder="הקלידו כאן..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">סיסמה</label>
+                            <input type="password" id="loginPass" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <!-- כפתור משודרג -->
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">יאללה, כנס! 🚀</button>
+                    </form>
+
+                    <div class="switch-form">
+                        חדשים כאן? <a id="goRegister">פתחו שחקן חדש</a>
+                    </div>
+                </div>
+
+                <!-- הרשמה -->
+                <div id="registerSection" class="form-box hidden">
+                    <div class="header-icon">✨</div>
+                    <h2>יצירת שחקן</h2>
+                    <div id="registerMsg" class="message-box"></div>
+
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label class="form-label">שם משתמש</label>
+                            <input type="text" id="regUser" class="form-input" placeholder="כינוי למשחק" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">אימייל</label>
+                            <input type="email" id="regEmail" class="form-input" placeholder="example@mail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">סיסמה</label>
+                            <input type="password" id="regPass" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">אימות סיסמה</label>
+                            <input type="password" id="regPassConfirm" class="form-input" required>
+                        </div>
+                        <!-- כפתור משודרג -->
+                        <button type="submit" class="btn btn-success" style="width:100%; margin-top:1rem;">צור שחקן! ✨</button>
+                    </form>
+
+                    <div class="switch-form">
+                        כבר רשומים? <a id="goLogin">התחברו כאן</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/login.js"></script>
+</body>
+</html>

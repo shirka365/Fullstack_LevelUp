@@ -1,35 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
-            
-    // 1. בדיקה האם המשתמש מחובר (סימולציה)
-    // בפרויקט האמיתי: תבדקו אם קיים מפתח 'currentUser' ב-LocalStorage
-    // הקוד מנסה למשוך את המשתמש השמור. אם אין כזה, הוא מקבל null.
+    
+    // בדיקה האם המשתמש מחובר
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || (currentUser.expires && new Date().getTime() > currentUser.expires)) {
+        window.location.href = 'login.html'; 
+        return;
+    }
 
-    if (!currentUser) {
-        // אם אין משתמש מחובר
-        console.log("No user logged in - showing demo data");
-        // אופציה להפניה לדף התחברות:
-        // window.location.href = '../HTML/login.html'; 
-    } else {
-        // אם יש משתמש, נעדכן את המסך עם הפרטים שלו
-        updateDashboard(currentUser);
+    updateDashboard(currentUser);
+    updateLeaderboard();
+
+    // הוספת מאזין לכפתור היציאה (במקום onclick ב-HTML)
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
     }
 
     function updateDashboard(user) {
-        // עדכון ה-DOM עם פרטי המשתמש
-        
-        // עדכון שם המשתמש בכותרת
         const displayUserNameElement = document.getElementById('displayUserName');
-        if (displayUserNameElement) displayUserNameElement.textContent = user.username;
+        if (displayUserNameElement) displayUserNameElement.textContent = user.firstName || user.username;
         
-        // עדכון שם המשתמש בבר הניווט
         const navUserNameElement = document.getElementById('navUserName');
-        if (navUserNameElement) navUserNameElement.textContent = `שלום, ${user.username}`;
+        if (navUserNameElement) navUserNameElement.textContent = `שלום, ${user.firstName || user.username}`;
         
-        // עדכון סטטיסטיקות (אם קיימות באובייקט המשתמש)
-        // משתמשים ב-|| 0 כדי להציג 0 אם הנתון לא קיים
         const highScoreElement = document.getElementById('highScoreDisplay');
-        if (highScoreElement) highScoreElement.textContent = user.highScore || 0;
+        const bestScore = Math.max(user.scores?.game1 || 0, user.scores?.game2 || 0);
+        if (highScoreElement) highScoreElement.textContent = bestScore;
         
         const coinsElement = document.getElementById('coinsDisplay');
         if (coinsElement) coinsElement.textContent = user.coins || 0;
@@ -37,13 +33,46 @@ document.addEventListener('DOMContentLoaded', () => {
         const gamesPlayedElement = document.getElementById('gamesPlayedDisplay');
         if (gamesPlayedElement) gamesPlayedElement.textContent = user.gamesPlayed || 0;
     }
+    
+    function updateLeaderboard() {
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        if (!leaderboardBody) return; 
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        users.sort((a, b) => {
+            const scoreA = Math.max(a.scores?.game1 || 0, a.scores?.game2 || 0);
+            const scoreB = Math.max(b.scores?.game1 || 0, b.scores?.game2 || 0);
+            return scoreB - scoreA;
+        });
+
+        leaderboardBody.innerHTML = '';
+
+        users.slice(0, 5).forEach((user, index) => {
+            const bestScore = Math.max(user.scores?.game1 || 0, user.scores?.game2 || 0);
+            const tr = document.createElement('tr');
+            
+            if (user.username === currentUser.username) {
+                tr.style.backgroundColor = '#FFF9C4'; 
+                tr.style.fontWeight = 'bold';
+            }
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${user.firstName || user.username}</td>
+                <td>${bestScore}</td>
+                <td>${user.gamesPlayed || 0}</td>
+            `;
+            leaderboardBody.appendChild(tr);
+        });
+
+        if (users.length === 0) {
+            leaderboardBody.innerHTML = '<tr><td colspan="4">אין עדיין שחקנים רשומים</td></tr>';
+        }
+    }
 });
 
 function logout() {
-    // מחיקת המשתמש הנוכחי מהזיכרון
     localStorage.removeItem('currentUser');
-    alert('התנתקת בהצלחה!');
-    // הפניה לדף התחברות או רענון הדף
-    location.reload(); 
-    // window.location.href = '../HTML/login.html'; // אם יש דף התחברות
+    window.location.href = 'login.html';
 }

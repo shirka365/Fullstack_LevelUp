@@ -4,63 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Master - משחק הזיכרון</title>
-    
-    <!-- קישור לעיצוב הראשי ולעיצוב הספציפי של המשחק -->
     <link rel="stylesheet" href="../CSS/main.css">
     <link rel="stylesheet" href="../CSS/game2.css">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- ניווט -->
     <nav class="navbar">
         <div class="logo">Level<span>Up</span>!</div>
         <div class="nav-user-info">
             <span id="navUserName">שלום, שחקן</span>
-            <a href="main.html" class="btn-logout" style="text-decoration: none; font-size: 0.9rem;">חזרה ללובי</a>
+            <a href="main.html" class="btn btn-outline" style="text-decoration: none; font-size: 0.9rem;">חזרה ללובי</a>
         </div>
     </nav>
 
     <div class="container game-container">
         
-        <!-- כותרת וסטטוס -->
         <header class="game-header">
             <h1>Memory Master 🧠</h1>
             <div class="game-stats">
-                <div class="stat-box">
-                    <span>צעדים:</span>
-                    <span id="movesCount">0</span>
-                </div>
-                <div class="stat-box">
-                    <span>זמן:</span>
-                    <span id="timeCount">00:00</span>
-                </div>
+                <div class="stat-box"><span>צעדים:</span> <span id="movesCount">0</span></div>
+                <div class="stat-box"><span>זמן:</span> <span id="timeCount">00:00</span></div>
             </div>
         </header>
 
-        <!-- לוח המשחק - הקלפים ייווצרו כאן דינמית -->
         <div id="gameBoard" class="game-board"></div>
 
-        <!-- כפתורי שליטה -->
         <div class="game-controls">
-            <button id="restartBtn" class="btn-play">משחק חדש</button>
+            <button id="restartBtn" class="btn btn-primary">משחק חדש</button>
         </div>
 
-        <!-- מודל ניצחון (מוסתר בהתחלה) -->
         <div id="winModal" class="modal hidden">
             <div class="modal-content">
                 <h2>כל הכבוד! 🎉</h2>
                 <p>סיימת את המשחק ב-<span id="finalMoves">0</span> צעדים ובזמן של <span id="finalTime">00:00</span></p>
-                <button onclick="location.reload()" class="btn-play">שחק שוב</button>
-                <button onclick="window.location.href='main.html'" class="btn-logout" style="margin-top: 10px;">חזרה לבית</button>
+                <button id="playAgainBtn" class="btn btn-success">שחק שוב</button>
+                <button id="exitGameBtn" class="btn btn-outline" style="margin-top: 10px;">חזרה לבית</button>
             </div>
         </div>
 
     </div>
 
     <script src="../JS/game2.js"></script>
+    <!-- הוספת סקריפט קטן לטיפול בכפתורים במודל -->
+    <script>
+        document.getElementById('playAgainBtn').addEventListener('click', () => location.reload());
+        document.getElementById('exitGameBtn').addEventListener('click', () => window.location.href = 'main.html');
+    </script>
 </body>
 </html>

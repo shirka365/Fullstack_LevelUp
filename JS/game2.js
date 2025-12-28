@@ -121,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    // ... (כל הקוד הקיים עד לפונקציה endGame) ...
+
     function endGame() {
         stopTimer();
         if (winModal) {

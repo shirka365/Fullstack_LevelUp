@@ -1,0 +1,167 @@
+/* --- עיצוב ספציפי למשחק Space Dodge (רוחב גדול, גובה רגיל) --- */
+
+.game-container {
+    max-width: 1000px; /* רוחב גדול למסכים רחבים */
+    width: 95%;        
+    text-align: center;
+    margin: 0 auto;
+}
+
+/* --- סטטיסטיקות --- */
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+}
+
+.stat-box {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 3px solid #E0E0E0;
+    min-width: 100px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+}
+
+/* --- לוח המשחק (החלל) --- */
+.game-area {
+    position: relative;
+    width: 100%;
+    
+    /* החזרנו לגובה סטנדרטי ונוח */
+    height: 500px; 
+    
+    background-color: #0f0f23;
+    background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    
+    border-radius: 20px;
+    border: 4px solid var(--accent-color);
+    overflow: hidden;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+    margin: 0 auto;
+}
+
+/* אנימציה לרקע שזז */
+@keyframes starMove {
+    from { background-position: 0 0, 40px 60px, 130px 270px; }
+    to { background-position: 0 500px, 40px 560px, 130px 770px; }
+}
+
+.game-area.active {
+    animation: starMove 10s linear infinite; /* מהירות אנימציה רגילה */
+}
+
+/* --- אלמנטים במשחק --- */
+
+/* השחקן (החללית) */
+.player {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 60px; /* השארתי קצת גדול שיהיה בולט */
+    height: 60px;
+    font-size: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%);
+    transition: left 0.1s linear; /* תנועה חלקה */
+    z-index: 10;
+    filter: drop-shadow(0 0 15px cyan);
+}
+
+/* מטאורים וכוכבים */
+.item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.meteor {
+    font-size: 40px;
+    z-index: 5;
+}
+
+.star {
+    font-size: 35px;
+    z-index: 4;
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- מסכים (התחלה/סוף) --- */
+.overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 20;
+    text-align: center;
+    padding: 20px;
+}
+
+.overlay h2 { color: var(--secondary-color); font-size: 3rem; margin-bottom: 15px; }
+.overlay p { font-size: 1.5rem; margin-bottom: 30px; color: #ddd; }
+
+.hidden { display: none !important; }
+
+/* כפתור פועם */
+.pulse-btn {
+    animation: pulse 1.5s infinite;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* --- כפתורי מובייל --- */
+.mobile-controls {
+    display: none;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding: 0 20px;
+}
+
+.control-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--accent-color);
+    font-size: 2.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:active { transform: translateY(2px); box-shadow: none; }
+
+@media (max-width: 768px) {
+    .mobile-controls { display: flex; }
+    .game-area { height: 60vh; max-height: 500px; }
+    .game-container { width: 100%; padding: 0 10px; }
+}
