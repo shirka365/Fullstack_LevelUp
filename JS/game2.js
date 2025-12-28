@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const winModal = document.getElementById('winModal');
     const navUserNameElement = document.getElementById('navUserName');
 
-    // בדיקת תקינות קריטית - אם אין לוח, אי אפשר לשחק
+    // בדיקת תקינות קריטית
     if (!gameBoard) {
         console.error("Critical Error: element with id 'gameBoard' not found in HTML!");
         alert("שגיאה: לא נמצא לוח משחק (gameBoard). בדקי את קובץ ה-HTML.");
         return;
     }
 
-    // --- 2. ניהול משתמש (מצב אורח/פיתוח) ---
+    // --- 2. ניהול משתמש ---
     let currentUser = null;
     try {
         const storedUser = localStorage.getItem('currentUser');
@@ -31,14 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn("LocalStorage access failed (Guest Mode active):", error);
     }
 
-    // עדכון תצוגה אם האלמנט קיים (לא חובה לפעולה התקינה של המשחק)
     if (navUserNameElement) {
         navUserNameElement.textContent = currentUser ? currentUser.username : "אורח (מצב פיתוח)";
     }
 
     // --- 3. לוגיקת המשחק ---
     const cardItems = ['🍕', '🚀', '🐱', '🌵', '🎈', '🎸', '🍦', '💎']; 
-    let cards = []; // יאוכלס מחדש בכל משחק
+    let cards = []; 
     
     let flippedCards = []; 
     let matchedPairs = 0;  
@@ -57,14 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initGame() {
         console.log("Initializing new game...");
         
-        // איפוס משתנים
         moves = 0;
         matchedPairs = 0;
         seconds = 0;
         flippedCards = [];
         gameActive = true;
         
-        // יצירה מחדש של חפיסת הקלפים (כדי להבטיח ניקיון)
         cards = [...cardItems, ...cardItems]; 
         
         if (winModal) winModal.classList.add('hidden');
@@ -73,24 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
         stopTimer();
         startTimer();
 
-        // ניקוי הלוח מהמשחק הקודם
         gameBoard.innerHTML = '';
 
-        // ערבוב הקלפים
         shuffleArray(cards);
 
-        // יצירת הקלפים ב-DOM
         cards.forEach((item) => {
             const card = document.createElement('div');
             card.classList.add('card');
             card.dataset.value = item;
 
-            // צד קדמי (האימוג'י - מוסתר בהתחלה ע"י רוטציה)
             const cardBack = document.createElement('div');
             cardBack.classList.add('card-face', 'card-back');
             cardBack.textContent = item;
 
-            // צד אחורי (סימן שאלה/עיצוב - גלוי בהתחלה)
             const cardFront = document.createElement('div');
             cardFront.classList.add('card-face', 'card-front');
             cardFront.textContent = '?';
@@ -122,7 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (flippedCards.length === 2) {
             moves++;
             updateStats();
-            checkForMatch();
+            // תיקון: השהייה קצרה (600ms) כדי לאפשר לאנימציית ההיפוך להסתיים לפני הבדיקה
+            setTimeout(checkForMatch, 600);
         }
     }
 
@@ -131,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const value1 = card1.dataset.value;
         const value2 = card2.dataset.value;
 
-        gameActive = false; // נעילת הלוח
+        gameActive = false; 
 
         if (value1 === value2) {
             // התאמה!
@@ -158,8 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ... (כל הקוד הקיים עד לפונקציה endGame) ...
-
     function endGame() {
         console.log("Game Over!");
         stopTimer();
@@ -172,24 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (winModal) winModal.classList.remove('hidden');
 
-        // --- שמירת נתונים למערכת המרכזית ---
+        // שמירת נתונים
         if (currentUser) {
-            // במשחק הזיכרון, פחות צעדים = ציון יותר גבוה
-            // נחשב ציון מדומה: 100 פחות הצעדים (מינימום 10)
             let calculatedScore = Math.max(10, 100 - moves);
-            
-            // בונוס מטבעות קבוע על ניצחון
             let coinsEarned = 20;
 
             saveGameStats({
                 gameId: 'game2',
-                currentScore: calculatedScore, // שומרים ציון ולא צעדים, כדי שיהיה קל להשוות
+                currentScore: calculatedScore, 
                 coinsEarned: coinsEarned
             });
         }
     }
 
-    // --- אותה פונקציית שמירה כמו במשחק הראשון (כדי לא לשכפל לוגיקה) ---
     function saveGameStats(data) {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(u => u.username === currentUser.username);
@@ -197,20 +183,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userIndex !== -1) {
             const user = users[userIndex];
 
-            // עדכון סטטיסטיקות כלליות
             user.gamesPlayed = (user.gamesPlayed || 0) + 1;
             user.coins = (user.coins || 0) + data.coinsEarned;
 
-            // עדכון שיא (במשחק הזה ציון גבוה זה טוב)
             if (data.currentScore > (user.scores[data.gameId] || 0)) {
                 user.scores[data.gameId] = data.currentScore;
             }
 
-            // שמירה קבועה
             users[userIndex] = user;
             localStorage.setItem('users', JSON.stringify(users));
 
-            // עדכון זמני (Session)
             currentUser.gamesPlayed = user.gamesPlayed;
             currentUser.coins = user.coins;
             currentUser.scores = user.scores;
@@ -220,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- עזרים ---
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
