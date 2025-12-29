@@ -20,7 +20,7 @@
         </div>
         <div class="nav-user-info">
             <span id="navUserName">שלום, שחקן</span>
-            <a href="main.html" class="btn btn-outline" style="text-decoration: none; font-size: 0.9rem;">חזרה ללובי</a>
+            <a href="main.html" class="btn btn-outline nav-back-btn">חזרה ללובי</a>
         </div>
     </nav>
 
@@ -44,13 +44,16 @@
             </div>
 
             <div id="gameOverScreen" class="overlay hidden">
-                <h2>המשחק נגמר! 💥</h2>
-                <p>הניקוד שלך: <span id="finalScore">0</span></p>
-                <p>מטבעות שהרווחת: <span id="finalCoins">0</span> 💰</p>
+                <div class="game-message-box">
+                    <h2>המשחק נגמר! 💥</h2>
+                    <p>הניקוד שלך: <span id="finalScore">0</span></p>
+                    <p>מטבעות שהרווחת: <span id="finalCoins">0</span> 💰</p>
 
-                <button id="restartBtn" class="btn btn-primary">שחק שוב</button>
-                <button id="exitBtn" class="btn btn-outline"
-                    style="margin-top: 10px; color:white; border-color:white;">יציאה</button>
+                    <div class="modal-buttons">
+                        <button id="restartBtn" class="btn btn-primary modal-btn">שחק שוב</button>
+                        <button id="exitBtn" class="btn btn-outline modal-btn">יציאה</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -62,7 +65,6 @@
     </div>
 
     <script src="../JS/game1.js"></script>
-    <!-- הוספת סקריפט קטן לטיפול בכפתור היציאה -->
     <script>
         document.getElementById('exitBtn').addEventListener('click', () => {
             window.location.href = 'main.html';

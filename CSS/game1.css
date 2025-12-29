@@ -170,3 +170,38 @@
     .game-area { height: 60vh; max-height: 500px; }
     .game-container { width: 100%; padding: 0 10px; }
 }
+
+
+/* --- תוספות לניקוי ה-HTML --- */
+
+/* כפתור חזרה ללובי */
+.nav-back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* --- סידור כפתורים במודל סיום --- */
+.modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px; /* שלא יהיו רחבים מדי */
+    margin-top: 20px;
+}
+
+.modal-btn {
+    width: 100%; /* רוחב אחיד */
+}
+
+/* עיצוב מיוחד לכפתור יציאה על רקע כהה */
+/* במשחק הזה הרקע הוא שחור שקוף, אז ה-outline הרגיל לא בולט */
+.btn-dark-bg {
+    color: white;
+    border-color: white;
+}
+
+.btn-dark-bg:hover {
+    background-color: white;
+    color: var(--primary-color);
+}

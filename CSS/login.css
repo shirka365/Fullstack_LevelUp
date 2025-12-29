@@ -35,6 +35,29 @@
     color: white;
     overflow: hidden;
 }
+/* --- תוספות לניקוי HTML --- */
+
+/* מיקומי הצורות המרחפות */
+.shape-1 {
+    top: 10%;
+    left: 10%;
+}
+
+.shape-2 {
+    top: 60%;
+    left: 80%;
+}
+
+.shape-3 {
+    bottom: 10%;
+    left: 20%;
+}
+
+/* כפתורי הטופס (כניסה והרשמה) */
+.form-btn {
+    width: 100%;
+    margin-top: 1rem;
+}
 
 @media (min-width: 768px) {
     .visual-side { display: flex; }
