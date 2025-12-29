@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log("Game Script Loaded! Starting initialization...");
 
+    // --- הגדרת סאונד ---
+    // הנתיב הוא יחסי לקובץ ה-HTML שמריץ את הסקריפט
+    const matchSound = new Audio('../media/match.wav');
+    const clappingSound = new Audio('../media/clapping.wav');
+
     // --- 1. משתני המשחק ורכיבי ה-DOM ---
     const gameBoard = document.getElementById('gameBoard');
     const movesDisplay = document.getElementById('movesCount');
@@ -56,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function initGame() {
         console.log("Initializing new game...");
         
+        // עצירת סאונד אם התחילו משחק חדש באמצע מחיאות הכפיים
+        clappingSound.pause(); 
+        clappingSound.currentTime = 0;
+
         moves = 0;
         matchedPairs = 0;
         seconds = 0;
@@ -100,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleCardClick(e) {
         const clickedCard = e.currentTarget;
 
-        // בדיקות תקינות ללחיצה
         if (!gameActive || 
             clickedCard.classList.contains('flipped') || 
             clickedCard.classList.contains('matched') ||
@@ -114,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (flippedCards.length === 2) {
             moves++;
             updateStats();
-            // תיקון: השהייה קצרה (600ms) כדי לאפשר לאנימציית ההיפוך להסתיים לפני הבדיקה
             setTimeout(checkForMatch, 600);
         }
     }
@@ -129,6 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (value1 === value2) {
             // התאמה!
             console.log("Match found: " + value1);
+            
+            // --- הפעלת סאונד התאמה (חדש! ✨) ---
+            matchSound.currentTime = 0; // מאפס את הסאונד למקרה שהוא כבר מתנגן
+            matchSound.play().catch(e => console.log("Sound error:", e));
+
             card1.classList.add('matched');
             card2.classList.add('matched');
             matchedPairs++;
@@ -155,6 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Game Over!");
         stopTimer();
         
+        // --- הפעלת סאונד סיום (חדש! ✨) ---
+        clappingSound.currentTime = 0;
+        clappingSound.play().catch(e => console.log("Sound error:", e));
+
+        // עצירת הסאונד אחרי 3 שניות בדיוק
+        setTimeout(() => {
+            clappingSound.pause();
+            clappingSound.currentTime = 0;
+        }, 3000);
+
         const finalMovesEl = document.getElementById('finalMoves');
         const finalTimeEl = document.getElementById('finalTime');
         

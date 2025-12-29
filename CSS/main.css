@@ -69,7 +69,25 @@ h2 { font-size: 1.8rem; color: var(--accent-color); margin-bottom: 1rem; }
     top: 0;
     z-index: 100;
 }
-.logo { font-weight: 700; font-size: 2rem; color: var(--primary-color); font-family: var(--title-font); }
+/* עדכון המחלקה הקיימת */
+.logo {
+    display: flex;           /* מציג את התמונה והטקסט בשורה אחת */
+    align-items: center;     /* ממרכז אותם אחד ביחס לשני לגובה */
+}
+
+/* העיצוב של התמונה עצמה */
+.logo-img {
+    height: 100px;        /* הגדלנו משמעותית (במקום 40px) */
+    width: auto;         /* שומר על פרופורציות */
+    transition: transform 0.3s ease; /* אנימציה נעימה למעבר עכבר */
+    cursor: pointer;     /* מראה יד כשעוברים על הלוגו */
+}
+
+/* אפקט הגדלה קטן כשעוברים עם העכבר - נותן תחושה משחקית */
+.logo-img:hover {
+    transform: scale(1.1) rotate(-5deg); 
+}
+
 .logo span { color: var(--accent-color); }
 .nav-user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; }
 
