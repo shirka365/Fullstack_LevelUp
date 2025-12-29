@@ -167,29 +167,36 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Game Over!");
         stopTimer();
         
-        // --- הפעלת סאונד סיום (חדש! ✨) ---
+        // סאונד סיום
         clappingSound.currentTime = 0;
         clappingSound.play().catch(e => console.log("Sound error:", e));
-
-        // עצירת הסאונד אחרי 3 שניות בדיוק
         setTimeout(() => {
             clappingSound.pause();
             clappingSound.currentTime = 0;
-        }, 3000);
+        }, 5000);
 
+        // חישוב ניקוד מאוזן (400 פחות קנסות)
+        let calculatedScore = Math.max(30, 400 - (moves * 10) - seconds);
+        let coinsEarned = Math.floor(calculatedScore / 10);
+
+        // עדכון טקסטים קיימים (צעדים וזמן)
         const finalMovesEl = document.getElementById('finalMoves');
         const finalTimeEl = document.getElementById('finalTime');
-        
         if (finalMovesEl) finalMovesEl.textContent = moves;
         if (finalTimeEl) finalTimeEl.textContent = formatTime(seconds);
         
+        // --- עדכון אלמנטים חדשים (ניקוד ומטבעות) ---
+        const finalScoreEl = document.getElementById('finalScore');
+        const finalCoinsEl = document.getElementById('finalCoins');
+        
+        if (finalScoreEl) finalScoreEl.textContent = calculatedScore;
+        if (finalCoinsEl) finalCoinsEl.textContent = coinsEarned;
+        
+        // הצגת המודל
         if (winModal) winModal.classList.remove('hidden');
 
-        // שמירת נתונים
+        // שמירה
         if (currentUser) {
-            let calculatedScore = Math.max(10, 100 - moves);
-            let coinsEarned = 20;
-
             saveGameStats({
                 gameId: 'game2',
                 currentScore: calculatedScore, 
@@ -205,20 +212,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userIndex !== -1) {
             const user = users[userIndex];
 
+            // 1. עדכון משחקים
             user.gamesPlayed = (user.gamesPlayed || 0) + 1;
+
+            // 2. עדכון מטבעות
             user.coins = (user.coins || 0) + data.coinsEarned;
 
+            // 3. עדכון ניקוד מצטבר (הוספה לקופה)
+            user.highScore = (user.highScore || 0) + data.currentScore;
+
+            // שמירת השיא המקומי למשחק (אופציונלי)
             if (data.currentScore > (user.scores[data.gameId] || 0)) {
                 user.scores[data.gameId] = data.currentScore;
             }
 
+            // שמירה
             users[userIndex] = user;
             localStorage.setItem('users', JSON.stringify(users));
 
             currentUser.gamesPlayed = user.gamesPlayed;
             currentUser.coins = user.coins;
             currentUser.scores = user.scores;
-            currentUser.highScore = Math.max(user.scores.game1 || 0, user.scores.game2 || 0);
+            currentUser.highScore = user.highScore;
             
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }

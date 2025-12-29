@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboard(currentUser);
     updateLeaderboard();
 
-    // הוספת מאזין לכפתור היציאה (במקום onclick ב-HTML)
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
@@ -23,9 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const navUserNameElement = document.getElementById('navUserName');
         if (navUserNameElement) navUserNameElement.textContent = `שלום, ${user.firstName || user.username}`;
         
+        // --- שינוי: הצגת הניקוד המצטבר ---
         const highScoreElement = document.getElementById('highScoreDisplay');
-        const bestScore = Math.max(user.scores?.game1 || 0, user.scores?.game2 || 0);
-        if (highScoreElement) highScoreElement.textContent = bestScore;
+        // פשוט מציגים את ה-highScore מהמשתמש, שהוא כעת סכום כל הנקודות
+        if (highScoreElement) highScoreElement.textContent = user.highScore || 0;
         
         const coinsElement = document.getElementById('coinsDisplay');
         if (coinsElement) coinsElement.textContent = user.coins || 0;
@@ -40,16 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const users = JSON.parse(localStorage.getItem('users')) || [];
         
+        // --- שינוי: מיון לפי הניקוד המצטבר ---
         users.sort((a, b) => {
-            const scoreA = Math.max(a.scores?.game1 || 0, a.scores?.game2 || 0);
-            const scoreB = Math.max(b.scores?.game1 || 0, b.scores?.game2 || 0);
-            return scoreB - scoreA;
+            const scoreA = a.highScore || 0;
+            const scoreB = b.highScore || 0;
+            return scoreB - scoreA; // מהגדול לקטן
         });
 
         leaderboardBody.innerHTML = '';
 
         users.slice(0, 5).forEach((user, index) => {
-            const bestScore = Math.max(user.scores?.game1 || 0, user.scores?.game2 || 0);
+            const totalScore = user.highScore || 0; // שימוש בניקוד המצטבר
             const tr = document.createElement('tr');
             
             if (user.username === currentUser.username) {
@@ -60,8 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${user.firstName || user.username}</td>
-                <td>${bestScore}</td>
-                <td>${user.gamesPlayed || 0}</td>
+                <td>${totalScore}</td> <td>${user.gamesPlayed || 0}</td>
             `;
             leaderboardBody.appendChild(tr);
         });

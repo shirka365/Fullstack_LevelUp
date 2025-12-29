@@ -7,6 +7,11 @@
     margin: 0 auto;
 }
 
+.game-info {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
 /* --- סטטיסטיקות --- */
 .game-stats {
     display: flex;

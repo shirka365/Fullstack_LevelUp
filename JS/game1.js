@@ -258,14 +258,20 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelAnimationFrame(animationFrameId);
         gameArea.classList.remove('active');
         
+        // חישוב מטבעות (1 לכל 10 נקודות)
+        const coinsEarned = Math.floor(score / 10);
+
+        // עדכון התצוגה במסך הסיום
         document.getElementById('finalScore').textContent = score;
+        
+        // --- עדכון אלמנט המטבעות החדש ---
+        const finalCoinsEl = document.getElementById('finalCoins');
+        if (finalCoinsEl) finalCoinsEl.textContent = coinsEarned;
+
         gameOverScreen.classList.remove('hidden');
 
-        // --- כאן השינוי הגדול: שמירת נתונים ---
+        // שמירת נתונים (שיא מצטבר וכו')
         if (currentUser) {
-            // חישוב מטבעות (למשל: 1 מטבע על כל 10 נקודות)
-            const coinsEarned = Math.floor(score / 10);
-            
             saveGameStats({
                 gameId: 'game1',
                 currentScore: score,
@@ -276,39 +282,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- פונקציית עזר לשמירה וסנכרון נתונים (תוסיפי את זה בסוף הקובץ) ---
     function saveGameStats(data) {
-        // 1. שליפת כל המשתמשים
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(u => u.username === currentUser.username);
 
         if (userIndex !== -1) {
             const user = users[userIndex];
 
-            // עדכון משחקים שוחקו
+            // 1. עדכון מספר המשחקים
             user.gamesPlayed = (user.gamesPlayed || 0) + 1;
             
-            // עדכון מטבעות
+            // 2. עדכון מטבעות (מצטבר)
             user.coins = (user.coins || 0) + data.coinsEarned;
 
-            // עדכון השיא הספציפי למשחק הזה
+            // 3. עדכון ניקוד מצטבר (השינוי הגדול!)
+            // במקום לבדוק מי יותר גדול, אנחנו פשוט מוסיפים את הניקוד החדש לסך הכולל
+            user.highScore = (user.highScore || 0) + data.currentScore;
+
+            // עדכון נתונים מקומיים למקרה שנרצה לדעת מה השיא הספציפי למשחק הזה (לא חובה לתצוגה הראשית אבל טוב שיהיה)
             if (data.currentScore > (user.scores[data.gameId] || 0)) {
                 user.scores[data.gameId] = data.currentScore;
-                console.log("New High Score!");
             }
 
-            // שמירה חזרה ל-Permanent Storage
+            // שמירה
             users[userIndex] = user;
             localStorage.setItem('users', JSON.stringify(users));
 
-            // עדכון ה-Session הנוכחי (כדי שדף הבית יתעדכן מיד)
+            // עדכון הסשן הנוכחי
             currentUser.gamesPlayed = user.gamesPlayed;
             currentUser.coins = user.coins;
             currentUser.scores = user.scores;
-            // שומרים גם שדה כללי לתצוגה נוחה
-            currentUser.highScore = Math.max(user.scores.game1 || 0, user.scores.game2 || 0);
+            currentUser.highScore = user.highScore; // עדכון הניקוד המצטבר בסשן
             
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            console.log("Stats saved successfully");
+            console.log("Cumulative stats saved successfully");
         }
     }
-// ... (סגירת ה-EventListener הראשי)
 });

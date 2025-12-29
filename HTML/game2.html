@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Master - משחק הזיכרון</title>
     <link rel="stylesheet" href="../CSS/main.css">
     <link rel="stylesheet" href="../CSS/game2.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Rubik:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -21,7 +25,7 @@
     </nav>
 
     <div class="container game-container">
-        
+
         <header class="game-header">
             <h1>Memory Master 🧠</h1>
             <div class="game-stats">
@@ -40,6 +44,14 @@
             <div class="modal-content">
                 <h2>כל הכבוד! 🎉</h2>
                 <p>סיימת את המשחק ב-<span id="finalMoves">0</span> צעדים ובזמן של <span id="finalTime">00:00</span></p>
+
+                <div
+                    style="margin: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color);">ניקוד: <span
+                            id="finalScore">0</span></p>
+                    <p style="font-size: 1.1rem;">מטבעות: <span id="finalCoins">0</span> 💰</p>
+                </div>
+
                 <button id="playAgainBtn" class="btn btn-success">שחק שוב</button>
                 <button id="exitGameBtn" class="btn btn-outline" style="margin-top: 10px;">חזרה לבית</button>
             </div>
@@ -54,4 +66,5 @@
         document.getElementById('exitGameBtn').addEventListener('click', () => window.location.href = 'main.html');
     </script>
 </body>
+
 </html>
