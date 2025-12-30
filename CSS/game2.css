@@ -56,13 +56,27 @@
 .card.matched {
     transform: rotateY(180deg);
     pointer-events: none;
-    animation: fadeOut 0.8s ease forwards;
+    animation: fadeOut 3s ease forwards;
+    transition: none;
 }
-
+.card.matched .card-front {
+    visibility: hidden; 
+}
 @keyframes fadeOut {
-    0% { opacity: 1; transform: rotateY(180deg) scale(1); }
-    60% { opacity: 1; transform: rotateY(180deg) scale(1.1); }
-    100% { opacity: 0; transform: rotateY(180deg) scale(0.8); }
+    0% { 
+        opacity: 1; 
+        transform: rotateY(180deg) scale(1); 
+    }
+    
+    70% { 
+        opacity: 1; 
+        transform: rotateY(180deg) scale(1.1); 
+    }
+    
+    100% { 
+        opacity: 0; 
+        transform: rotateY(180deg) scale(0.8); 
+    }
 }
 
 .card-face {
