@@ -1,11 +1,8 @@
-/* --- עיצוב ספציפי למשחק הזיכרון --- */
-
 .game-container {
     max-width: 800px;
     text-align: center;
 }
 
-/* --- כפתור חזרה ללובי (חדש) --- */
 .nav-back-btn {
     text-decoration: none;
     font-size: 0.9rem;
@@ -33,7 +30,6 @@
     box-shadow: 0 4px 0 rgba(0,0,0,0.05);
 }
 
-/* --- לוח המשחק --- */
 .game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -42,7 +38,7 @@
     perspective: 1000px;
 }
 
-/* --- הקלף --- */
+
 .card {
     background-color: transparent;
     height: 120px;
@@ -69,7 +65,6 @@
     100% { opacity: 0; transform: rotateY(180deg) scale(0.8); }
 }
 
-/* הצד הקדמי והאחורי של הקלף */
 .card-face {
     position: absolute;
     width: 100%;
@@ -84,7 +79,6 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* גב הקלף */
 .card-front {
     background-color: var(--accent-color);
     background-image: repeating-linear-gradient(
@@ -98,7 +92,7 @@
     font-size: 2rem;
 }
 
-/* פנים הקלף */
+
 .card-back {
     background-color: white;
     transform: rotateY(180deg);
@@ -111,7 +105,7 @@
     color: white;
 }
 
-/* --- מודל ניצחון --- */
+
 .modal {
     position: fixed;
     top: 0; left: 0;
@@ -128,14 +122,6 @@
 }
 
 
-@keyframes slideDown {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* --- עיצוב תוכן המודל (חדש!) --- */
-
-/* אזור הסיכום (ניקוד ומטבעות) */
 .modal-summary {
     margin: 15px 0;
     border-top: 1px solid #eee;
@@ -154,22 +140,22 @@
     font-size: 1.1rem;
 }
 
-/* כפתורי המודל (חדש!) */
+
 .modal-buttons {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* רווח בין הכפתורים */
+    gap: 10px;
     margin-top: 15px;
 }
 
-/* עיצוב אחיד לשני הכפתורים */
+
 .modal-btn {
-    width: 100%; /* רוחב מלא בתוך המודל */
+    width: 100%; 
     display: block;
-    box-sizing: border-box; /* מבטיח שה-padding לא ישבור את הרוחב */
+    box-sizing: border-box; 
 }
 
-/* התאמה למובייל */
+
 @media (max-width: 600px) {
     .game-board {
         grid-template-columns: repeat(4, 1fr);

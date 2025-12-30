@@ -1,20 +1,28 @@
+// JS/main.js
+
+// don't run this code unless the whole DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     
-    // בדיקה האם המשתמש מחובר
+    // check if user is logged in and session is valid
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser || (currentUser.expires && new Date().getTime() > currentUser.expires)) {
         window.location.href = 'login.html'; 
         return;
     }
 
+    // update dashboard and leaderboard
     updateDashboard(currentUser);
     updateLeaderboard();
 
+    // logout button handler
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
+        // call logout function on click
         logoutBtn.addEventListener('click', logout);
     }
 
+    // ---  functions ---
+    // update user info on dashboard
     function updateDashboard(user) {
         const displayUserNameElement = document.getElementById('displayUserName');
         if (displayUserNameElement) displayUserNameElement.textContent = user.firstName || user.username;
@@ -22,9 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const navUserNameElement = document.getElementById('navUserName');
         if (navUserNameElement) navUserNameElement.textContent = `שלום, ${user.firstName || user.username}`;
         
-        // --- שינוי: הצגת הניקוד המצטבר ---
         const highScoreElement = document.getElementById('highScoreDisplay');
-        // פשוט מציגים את ה-highScore מהמשתמש, שהוא כעת סכום כל הנקודות
         if (highScoreElement) highScoreElement.textContent = user.highScore || 0;
         
         const coinsElement = document.getElementById('coinsDisplay');
@@ -34,35 +40,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gamesPlayedElement) gamesPlayedElement.textContent = user.gamesPlayed || 0;
     }
     
+    // update leaderboard table
     function updateLeaderboard() {
         const leaderboardBody = document.getElementById('leaderboardBody');
         if (!leaderboardBody) return; 
 
         const users = JSON.parse(localStorage.getItem('users')) || [];
         
-        // --- שינוי: מיון לפי הניקוד המצטבר ---
+        // ---  sorting by cumulative score ---
         users.sort((a, b) => {
             const scoreA = a.highScore || 0;
             const scoreB = b.highScore || 0;
-            return scoreB - scoreA; // מהגדול לקטן
+            return scoreB - scoreA; // from highest to lowest
         });
+
 
         leaderboardBody.innerHTML = '';
 
+        // display top 5 users
         users.slice(0, 5).forEach((user, index) => {
-            const totalScore = user.highScore || 0; // שימוש בניקוד המצטבר
+            const totalScore = user.highScore || 0; 
+            // create table row
             const tr = document.createElement('tr');
             
+            // highlight current user
             if (user.username === currentUser.username) {
                 tr.style.backgroundColor = '#FFF9C4'; 
                 tr.style.fontWeight = 'bold';
             }
 
+            // populate row with user data
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${user.firstName || user.username}</td>
                 <td>${totalScore}</td> <td>${user.gamesPlayed || 0}</td>
             `;
+            // append row to leaderboard 
             leaderboardBody.appendChild(tr);
         });
 
@@ -74,5 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function logout() {
     localStorage.removeItem('currentUser');
+    // Redirect to login page
     window.location.href = 'login.html';
 }

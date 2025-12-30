@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. משתנים והגדרות ---
+    // initialize variables and elements
     const gameArea = document.getElementById('gameArea');
     const player = document.createElement('div');
     const startScreen = document.getElementById('startScreen');
@@ -10,22 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const levelDisplay = document.getElementById('levelDisplay');
     const navUserName = document.getElementById('navUserName');
 
-    // הגדרות משחק - מהירות מותאמת
+    // game setup variables (modifiable for difficulty)
     let gameActive = false;
     let score = 0;
     let lives = 3;
     let level = 1;
-    let gameSpeed = 3; // החזרנו למהירות רגילה (במקום 5)
-    let spawnRate = 1000; // קצב יצירה רגיל (במקום 800)
-    let lastSpawnTime = 0;
-    let animationFrameId;
-    let playerPos = 50; // מיקום באחוזים (50% = אמצע)
     
-    // מערכים לשמירת האלמנטים שזזים
+    // difficulty settings (you can tweak these values)
+    let gameSpeed = 1.5; // starting speed - lower is slower
+    let spawnRate = 1500; // milliseconds between object spawns
+    
+    let lastSpawnTime = 0;// for tracking spawn timing
+    let animationFrameId;// for managing the game loop
+    let playerPos = 50; // horizontal position (percentage)
+    
+    // arrays to hold game objects
     let enemies = [];
     let collectibles = [];
 
-    // --- 2. טעינת משתמש ---
+    // current user loading
     let currentUser = null;
     try {
         currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -34,80 +37,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) { console.error("Error loading user", e); }
 
-    // --- 3. אתחול המשחק ---
+    // initialize event listeners
     document.getElementById('startBtn').addEventListener('click', startGame);
     document.getElementById('restartBtn').addEventListener('click', startGame);
 
     function startGame() {
-        // איפוס משתנים
+        // reset game variables
         score = 0;
         lives = 3;
         level = 1;
-        gameSpeed = 3; // איפוס למהירות התחלתית רגועה
-        spawnRate = 1000;
+        
+        gameSpeed = 1.5; 
+        spawnRate = 1500;
+        
         playerPos = 50;
         enemies = [];
         collectibles = [];
         gameActive = true;
 
-        // עדכון תצוגה
+        // clear previous game elements and show game area
         updateStats();
         startScreen.classList.add('hidden');
         gameOverScreen.classList.add('hidden');
-        gameArea.classList.add('active'); // מפעיל אנימציית רקע
+        gameArea.classList.add('active'); // animate background
 
-        // ניקוי הלוח והוספת שחקן
+        // add hidden elements to game area for later use
         gameArea.innerHTML = '';
-        gameArea.appendChild(startScreen); // מחזירים את המסכים שיהיו מוסתרים
+        gameArea.appendChild(startScreen); 
         gameArea.appendChild(gameOverScreen);
         
+        // player setup
         player.className = 'player';
         player.textContent = '🚀';
         player.style.left = playerPos + '%';
         gameArea.appendChild(player);
 
-        // התחלת הלולאה
+        // reset timing and start game loop
         lastSpawnTime = performance.now();
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = requestAnimationFrame(gameLoop);
     }
 
-    // --- 4. לולאת המשחק (Game Loop) ---
+    // game loop function 
     function gameLoop(timestamp) {
         if (!gameActive) return;
 
-        // יצירת אובייקטים חדשים
+        // creatng new objects based on spawn rate
         if (timestamp - lastSpawnTime > spawnRate) {
             spawnObject();
             lastSpawnTime = timestamp;
         }
 
-        // הזזת אובייקטים
+        // moving objects
         moveObjects(enemies, 'meteor');
         moveObjects(collectibles, 'star');
 
-        // בדיקת התנגשויות
+        // checking collisions
         checkCollisions();
 
-        // בקשת הפריים הבא
+        // request next frame
         animationFrameId = requestAnimationFrame(gameLoop);
     }
 
-    // --- 5. לוגיקת תנועה ויצירה ---
+    // moving ant creating objects
     function spawnObject() {
         const item = document.createElement('div');
-        const isEnemy = Math.random() > 0.3; // 70% סיכוי למטאור
+        const isEnemy = Math.random() > 0.3; // 70% chance for enemy, 30% for collectible
         
+        // object setup 
         item.classList.add('item');
         item.classList.add(isEnemy ? 'meteor' : 'star');
         item.textContent = isEnemy ? '🪨' : '⭐';
         
-        // מיקום רנדומלי (0% עד 90% כדי שלא יצא מהמסגרת)
+        // random horizontal position within game area
         item.style.left = Math.floor(Math.random() * 90) + '%';
         item.style.top = '-60px'; 
         
         gameArea.appendChild(item);
 
+        // adding to respective array
         if (isEnemy) {
             enemies.push(item);
         } else {
@@ -120,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let item = array[i];
             let currentTop = parseFloat(item.style.top || -60);
             
-            // עדכון מיקום
+            // location update
             item.style.top = (currentTop + gameSpeed) + 'px';
 
-            // מחיקה אם יצא מהמסך
+            // delete if out of bounds
             if (currentTop > gameArea.offsetHeight) {
                 item.remove();
                 array.splice(i, 1);
@@ -132,15 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 6. שליטה בשחקן ---
-    // מקלדת
+    // player controls
+    // keyboard controls
     document.addEventListener('keydown', (e) => {
         if (!gameActive) return;
         if (e.key === 'ArrowLeft') movePlayer(-5);
         if (e.key === 'ArrowRight') movePlayer(5);
     });
 
-    // כפתורי מובייל
+    // touch and click controls
     document.getElementById('btnLeft').addEventListener('touchstart', (e) => { 
         e.preventDefault(); movePlayer(-10); 
     });
@@ -151,22 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('btnRight').addEventListener('click', () => movePlayer(10));
 
+    // move player function
     function movePlayer(delta) {
         playerPos += delta;
-        // גבולות גזרה (0 עד 90 אחוז)
+        // boundary checks 
         if (playerPos < 0) playerPos = 0;
         if (playerPos > 90) playerPos = 90;
         player.style.left = playerPos + '%';
     }
 
-    // --- 7. בדיקת התנגשויות ---
+    // collision detection
     function checkCollisions() {
         const playerRect = player.getBoundingClientRect();
 
-        // בדיקת מטאורים
+        // meteor checks
         enemies.forEach((enemy, index) => {
             const enemyRect = enemy.getBoundingClientRect();
-            // הקטנת שטח הפגיעה מעט (Hitbox) כדי שיהיה הוגן יותר
+            // adding padding for fairer collision
             const padding = 10; 
             const reducedEnemyRect = {
                 left: enemyRect.left + padding,
@@ -176,18 +185,18 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             if (isColliding(playerRect, reducedEnemyRect)) {
-                // פגיעה!
+                // hit!
                 enemy.remove();
                 enemies.splice(index, 1);
                 hitMeteor();
             }
         });
 
-        // בדיקת כוכבים
+        // star checks
         collectibles.forEach((star, index) => {
             const starRect = star.getBoundingClientRect();
             if (isColliding(playerRect, starRect)) {
-                // איסוף!
+                // collect!
                 star.remove();
                 collectibles.splice(index, 1);
                 collectStar();
@@ -204,12 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    // --- 8. ניהול מצב משחק ---
+    // game event handlers
     function collectStar() {
         score += 10;
         updateStats();
         
-        // עליית רמה כל 100 נקודות
+        // level up every 100 points
         if (score > 0 && score % 100 === 0) {
             levelUp();
         }
@@ -217,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hitMeteor() {
         lives--;
-        // אפקט רעידה
+        // shake effect
         gameArea.classList.add('shake');
         setTimeout(() => gameArea.classList.remove('shake'), 500);
         
@@ -228,12 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // level up function
     function levelUp() {
         level++;
-        gameSpeed += 0.5; // האצה מתונה
-        spawnRate = Math.max(300, spawnRate - 50); 
-        
-        // הודעה קטנה
+        gameSpeed += 0.2; // increase speed
+        spawnRate = Math.max(500, spawnRate - 50); // decrease spawn rate
+
+        // level up message
         const msg = document.createElement('div');
         msg.textContent = 'LEVEL UP!';
         msg.style.position = 'absolute';
@@ -249,30 +259,34 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => msg.remove(), 2000);
     }
 
+    // update score, lives, level display
     function updateStats() {
         scoreDisplay.textContent = score;
         livesDisplay.textContent = '❤️'.repeat(lives);
         levelDisplay.textContent = level;
     }
 
+
+    // end game function
     function endGame() {
         gameActive = false;
         cancelAnimationFrame(animationFrameId);
         gameArea.classList.remove('active');
         
-        // חישוב מטבעות (1 לכל 10 נקודות)
+        // calculate coins earned
         const coinsEarned = Math.floor(score / 10);
 
-        // עדכון התצוגה במסך הסיום
+        // update game over screen
         document.getElementById('finalScore').textContent = score;
         
-        // --- עדכון אלמנט המטבעות החדש ---
+        // update coins earned display
         const finalCoinsEl = document.getElementById('finalCoins');
         if (finalCoinsEl) finalCoinsEl.textContent = coinsEarned;
 
+        // show game over screen
         gameOverScreen.classList.remove('hidden');
 
-        // שמירת נתונים (שיא מצטבר וכו')
+        // save stats to user profile
         if (currentUser) {
             saveGameStats({
                 gameId: 'game1',
@@ -282,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- פונקציית עזר לשמירה וסנכרון נתונים (תוסיפי את זה בסוף הקובץ) ---
+    // save game stats to localStorage
     function saveGameStats(data) {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(u => u.username === currentUser.username);
@@ -290,30 +304,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userIndex !== -1) {
             const user = users[userIndex];
 
-            // 1. עדכון מספר המשחקים
+            // update games played
             user.gamesPlayed = (user.gamesPlayed || 0) + 1;
             
-            // 2. עדכון מטבעות (מצטבר)
+            // update coins 
             user.coins = (user.coins || 0) + data.coinsEarned;
 
-            // 3. עדכון ניקוד מצטבר (השינוי הגדול!)
-            // במקום לבדוק מי יותר גדול, אנחנו פשוט מוסיפים את הניקוד החדש לסך הכולל
+            // update high score
             user.highScore = (user.highScore || 0) + data.currentScore;
 
-            // עדכון נתונים מקומיים למקרה שנרצה לדעת מה השיא הספציפי למשחק הזה (לא חובה לתצוגה הראשית אבל טוב שיהיה)
+            // update current user scores 
             if (data.currentScore > (user.scores[data.gameId] || 0)) {
                 user.scores[data.gameId] = data.currentScore;
             }
 
-            // שמירה
+            // save back to localStorage
             users[userIndex] = user;
             localStorage.setItem('users', JSON.stringify(users));
 
-            // עדכון הסשן הנוכחי
+            // update the current session
             currentUser.gamesPlayed = user.gamesPlayed;
             currentUser.coins = user.coins;
             currentUser.scores = user.scores;
-            currentUser.highScore = user.highScore; // עדכון הניקוד המצטבר בסשן
+            currentUser.highScore = user.highScore; // update cumulative score in session
             
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             console.log("Cumulative stats saved successfully");

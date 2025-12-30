@@ -2,12 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log("Game Script Loaded! Starting initialization...");
 
-    // --- הגדרת סאונד ---
-    // הנתיב הוא יחסי לקובץ ה-HTML שמריץ את הסקריפט
+    // --- audio assets ---
     const matchSound = new Audio('../media/match.wav');
     const clappingSound = new Audio('../media/clapping.wav');
 
-    // --- 1. משתני המשחק ורכיבי ה-DOM ---
+    // --- 1. game variables and DOM elements ---
     const gameBoard = document.getElementById('gameBoard');
     const movesDisplay = document.getElementById('movesCount');
     const timeDisplay = document.getElementById('timeCount');
@@ -15,32 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const winModal = document.getElementById('winModal');
     const navUserNameElement = document.getElementById('navUserName');
 
-    // בדיקת תקינות קריטית
-    if (!gameBoard) {
-        console.error("Critical Error: element with id 'gameBoard' not found in HTML!");
-        alert("שגיאה: לא נמצא לוח משחק (gameBoard). בדקי את קובץ ה-HTML.");
-        return;
-    }
 
-    // --- 2. ניהול משתמש ---
+    // --- user management ---
     let currentUser = null;
     try {
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
             currentUser = JSON.parse(storedUser);
-            console.log("User loaded:", currentUser.username);
-        } else {
-            console.log("No user found - Running in Guest/Dev Mode");
+             // check session expiry
+            if (currentUser.expires && new Date().getTime() > currentUser.expires) {
+                currentUser = null;
+            }
         }
     } catch (error) {
-        console.warn("LocalStorage access failed (Guest Mode active):", error);
+        console.warn("LocalStorage access failed:", error);
     }
+
+    // if no valid user session, redirect to login
+    if (!currentUser) {
+       
+        window.location.href = 'login.html';
+        return; 
+    }
+
+    console.log("User loaded:", currentUser.username);
 
     if (navUserNameElement) {
-        navUserNameElement.textContent = currentUser ? currentUser.username : "אורח (מצב פיתוח)";
+        navUserNameElement.textContent = currentUser.username;
     }
 
-    // --- 3. לוגיקת המשחק ---
+    // ---  game logic variables ---
     const cardItems = ['🍕', '🚀', '🐱', '🌵', '🎈', '🎸', '🍦', '💎']; 
     let cards = []; 
     
@@ -51,43 +54,54 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;     
     let seconds = 0;
 
-    // --- אתחול והרצת המשחק ---
+    // --- initialization and start ---
+
     initGame();
 
     if (restartBtn) {
         restartBtn.addEventListener('click', initGame);
     }
 
+    // ---  functions ---
+
     function initGame() {
         console.log("Initializing new game...");
-        
-        // עצירת סאונד אם התחילו משחק חדש באמצע מחיאות הכפיים
+
+        // reset clapping sound
         clappingSound.pause(); 
         clappingSound.currentTime = 0;
 
+        // reset game variables
         moves = 0;
         matchedPairs = 0;
         seconds = 0;
         flippedCards = [];
         gameActive = true;
         
+        // create card set (pairs) by using spread operator
         cards = [...cardItems, ...cardItems]; 
-        
+
+        // shuffle cards
+        shuffleArray(cards);
+
+        // hide win modal if visible
         if (winModal) winModal.classList.add('hidden');
         
         updateStats();
         stopTimer();
         startTimer();
 
+        // clear existing cards
         gameBoard.innerHTML = '';
-
-        shuffleArray(cards);
 
         cards.forEach((item) => {
             const card = document.createElement('div');
             card.classList.add('card');
+            // store item value in dataset
             card.dataset.value = item;
 
+
+            // create card faces
             const cardBack = document.createElement('div');
             cardBack.classList.add('card-face', 'card-back');
             cardBack.textContent = item;
@@ -96,10 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
             cardFront.classList.add('card-face', 'card-front');
             cardFront.textContent = '?';
 
+            // append faces to card
             card.appendChild(cardBack);
             card.appendChild(cardFront);
             
+            // add click event listener
             card.addEventListener('click', handleCardClick);
+
+            // append card to game board
             gameBoard.appendChild(card);
         });
         
@@ -108,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleCardClick(e) {
         const clickedCard = e.currentTarget;
-
+        
+        // ignore clicks if game not active or card already flipped/matched
         if (!gameActive || 
             clickedCard.classList.contains('flipped') || 
             clickedCard.classList.contains('matched') ||
@@ -117,6 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         clickedCard.classList.add('flipped');
+        
+        // add clicked card to flippedCards array
         flippedCards.push(clickedCard);
 
         if (flippedCards.length === 2) {
@@ -131,14 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const value1 = card1.dataset.value;
         const value2 = card2.dataset.value;
 
+        // temporarily disable game interaction
         gameActive = false; 
 
         if (value1 === value2) {
-            // התאמה!
+
             console.log("Match found: " + value1);
             
-            // --- הפעלת סאונד התאמה (חדש! ✨) ---
-            matchSound.currentTime = 0; // מאפס את הסאונד למקרה שהוא כבר מתנגן
+            // --- match sound ---
+            matchSound.currentTime = 0; // reset to start
             matchSound.play().catch(e => console.log("Sound error:", e));
 
             card1.classList.add('matched');
@@ -147,13 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             flippedCards = [];
             gameActive = true;
-
+            
+            // check for game completion
             if (matchedPairs === cardItems.length) {
                 endGame();
             }
 
         } else {
-            // אין התאמה
+            // no match - flip back after delay
             setTimeout(() => {
                 card1.classList.remove('flipped');
                 card2.classList.remove('flipped');
@@ -167,35 +190,35 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Game Over!");
         stopTimer();
         
-        // סאונד סיום
+        // end game sound
         clappingSound.currentTime = 0;
         clappingSound.play().catch(e => console.log("Sound error:", e));
         setTimeout(() => {
             clappingSound.pause();
             clappingSound.currentTime = 0;
-        }, 5000);
+        }, 3000);
 
-        // חישוב ניקוד מאוזן (400 פחות קנסות)
+        // calculate score and coins
         let calculatedScore = Math.max(30, 400 - (moves * 10) - seconds);
         let coinsEarned = Math.floor(calculatedScore / 10);
 
-        // עדכון טקסטים קיימים (צעדים וזמן)
+        // update modal elements 
         const finalMovesEl = document.getElementById('finalMoves');
         const finalTimeEl = document.getElementById('finalTime');
         if (finalMovesEl) finalMovesEl.textContent = moves;
         if (finalTimeEl) finalTimeEl.textContent = formatTime(seconds);
         
-        // --- עדכון אלמנטים חדשים (ניקוד ומטבעות) ---
+        // update score and coins elements
         const finalScoreEl = document.getElementById('finalScore');
         const finalCoinsEl = document.getElementById('finalCoins');
         
         if (finalScoreEl) finalScoreEl.textContent = calculatedScore;
         if (finalCoinsEl) finalCoinsEl.textContent = coinsEarned;
         
-        // הצגת המודל
+        // show the modal
         if (winModal) winModal.classList.remove('hidden');
 
-        // שמירה
+        // save to localStorage
         if (currentUser) {
             saveGameStats({
                 gameId: 'game2',
@@ -212,21 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userIndex !== -1) {
             const user = users[userIndex];
 
-            // 1. עדכון משחקים
+            // 1. update games played
             user.gamesPlayed = (user.gamesPlayed || 0) + 1;
 
-            // 2. עדכון מטבעות
+            // 2. update coins
             user.coins = (user.coins || 0) + data.coinsEarned;
 
-            // 3. עדכון ניקוד מצטבר (הוספה לקופה)
+            // 3. update total score (add to the pool)
             user.highScore = (user.highScore || 0) + data.currentScore;
 
-            // שמירת השיא המקומי למשחק (אופציונלי)
+            // 4. update best score for this game if higher
             if (data.currentScore > (user.scores[data.gameId] || 0)) {
                 user.scores[data.gameId] = data.currentScore;
             }
 
-            // שמירה
+            // save to localStorage
             users[userIndex] = user;
             localStorage.setItem('users', JSON.stringify(users));
 
@@ -239,6 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- utility functions ---
+    // Fisher-Yates shuffle
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -246,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // timer functions
     function startTimer() {
         timerInterval = setInterval(() => {
             seconds++;
@@ -257,11 +283,13 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
     }
 
+    // update moves and time display
     function updateStats() {
         if (movesDisplay) movesDisplay.textContent = moves;
         if (timeDisplay) timeDisplay.textContent = formatTime(seconds);
     }
 
+    // format time as MM:SS
     function formatTime(totalSeconds) {
         const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
         const s = (totalSeconds % 60).toString().padStart(2, '0');

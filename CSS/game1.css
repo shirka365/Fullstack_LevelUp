@@ -1,7 +1,5 @@
-/* --- עיצוב ספציפי למשחק Space Dodge (רוחב גדול, גובה רגיל) --- */
-
 .game-container {
-    max-width: 1000px; /* רוחב גדול למסכים רחבים */
+    max-width: 1000px; 
     width: 95%;        
     text-align: center;
     margin: 0 auto;
@@ -12,7 +10,7 @@
     color: #666;
     margin-top: 5px;
 }
-/* --- סטטיסטיקות --- */
+
 .game-stats {
     display: flex;
     justify-content: center;
@@ -32,12 +30,10 @@
     box-shadow: 0 4px 0 rgba(0,0,0,0.05);
 }
 
-/* --- לוח המשחק (החלל) --- */
+
 .game-area {
     position: relative;
     width: 100%;
-    
-    /* החזרנו לגובה סטנדרטי ונוח */
     height: 500px; 
     
     background-color: #0f0f23;
@@ -55,36 +51,33 @@
     margin: 0 auto;
 }
 
-/* אנימציה לרקע שזז */
 @keyframes starMove {
     from { background-position: 0 0, 40px 60px, 130px 270px; }
     to { background-position: 0 500px, 40px 560px, 130px 770px; }
 }
 
 .game-area.active {
-    animation: starMove 10s linear infinite; /* מהירות אנימציה רגילה */
+    animation: starMove 10s linear infinite; 
 }
 
-/* --- אלמנטים במשחק --- */
-
-/* השחקן (החללית) */
+/* --- player --- */
 .player {
     position: absolute;
     bottom: 20px;
     left: 50%;
-    width: 60px; /* השארתי קצת גדול שיהיה בולט */
+    width: 60px;
     height: 60px;
     font-size: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     transform: translateX(-50%);
-    transition: left 0.1s linear; /* תנועה חלקה */
+    transition: left 0.1s linear; 
     z-index: 10;
     filter: drop-shadow(0 0 15px cyan);
 }
 
-/* מטאורים וכוכבים */
+/* meteors and stars */
 .item {
     position: absolute;
     display: flex;
@@ -108,7 +101,7 @@
     to { transform: rotate(360deg); }
 }
 
-/* --- מסכים (התחלה/סוף) --- */
+/* --- overlay --- */
 .overlay {
     position: absolute;
     top: 0; left: 0;
@@ -124,12 +117,23 @@
     padding: 20px;
 }
 
-.overlay h2 { color: var(--secondary-color); font-size: 3rem; margin-bottom: 15px; }
-.overlay p { font-size: 1.5rem; margin-bottom: 30px; color: #ddd; }
+.overlay h2 {
+    color: var(--secondary-color);
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
 
-.hidden { display: none !important; }
+.overlay p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: #ddd;
+}
 
-/* כפתור פועם */
+.hidden {
+    display: none !important;
+}
+
+
 .pulse-btn {
     animation: pulse 1.5s infinite;
     padding: 15px 40px;
@@ -141,7 +145,6 @@
     100% { transform: scale(1); }
 }
 
-/* --- כפתורי מובייל --- */
 .mobile-controls {
     display: none;
     justify-content: space-between;
@@ -172,30 +175,26 @@
 }
 
 
-/* --- תוספות לניקוי ה-HTML --- */
 
-/* כפתור חזרה ללובי */
 .nav-back-btn {
     text-decoration: none;
     font-size: 0.9rem;
 }
 
-/* --- סידור כפתורים במודל סיום --- */
+
 .modal-buttons {
     display: flex;
     flex-direction: column;
     gap: 15px;
     width: 100%;
-    max-width: 300px; /* שלא יהיו רחבים מדי */
+    max-width: 300px;
     margin-top: 20px;
 }
 
 .modal-btn {
-    width: 100%; /* רוחב אחיד */
+    width: 100%; 
 }
 
-/* עיצוב מיוחד לכפתור יציאה על רקע כהה */
-/* במשחק הזה הרקע הוא שחור שקוף, אז ה-outline הרגיל לא בולט */
 .btn-dark-bg {
     color: white;
     border-color: white;
