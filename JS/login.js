@@ -1,4 +1,5 @@
 //login.js - user login and registration
+document.addEventListener('DOMContentLoaded', () => {
 
 //global variables
 const loginSection = document.getElementById('loginSection');
@@ -68,12 +69,12 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
         return;
     }
 
-    const users = getUsers();
+        const users = getUsers();
 
-    if (users.find(u => u.username === username)) {
-        showMessage(registerMsg, 'שם המשתמש תפוס, נסה שם אחר', true);
-        return;
-    }
+        if (users.find(u => u.username === username)) {
+            showMessage(registerMsg, 'שם המשתמש תפוס, נסה שם אחר', true);
+            return;
+        }
 
     //create new user object
     const newUser = {
@@ -120,7 +121,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         return;
     }
 
-    const user = users[userIndex];
+        const user = users[userIndex];
 
     //check if user is blocked
     if (user.blockedUntil && new Date(user.blockedUntil) > new Date()) {
@@ -164,7 +165,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     };
     localStorage.setItem('currentUser', JSON.stringify(session));
 
-    showMessage(loginMsg, 'התחברת בהצלחה! עוברים למשחקים...', false);
+        showMessage(loginMsg, 'התחברת בהצלחה! עוברים למשחקים...', false);
 
     //redirect to main page after a short delay
     setTimeout(() => {
@@ -184,3 +185,5 @@ window.onload = function() {
         }
     }
 };
+
+});
